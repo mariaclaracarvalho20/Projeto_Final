@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diário Digital Animado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6366f1",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .transition-screen {
+        @apply transition-all duration-500 ease-in-out;
+      }
+    </style>
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+    <!-- Container principal -->
+    <div id="app" class="min-h-screen flex flex-col items-center justify-center p-4">
+      <!-- Tela de boas-vindas -->
+      <section id="intro-screen" class="w-full max-w-md transition-screen">
+        <div class="text-center space-y-4">
+          <h1 class="text-3xl font-bold">🌟 Bem-vindo ao Diário Digital!</h1>
+          <p class="text-lg">Registre seu humor, compartilhe seu dia e celebre momentos especiais.</p>
+          <button id="start-btn" class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-indigo-700 transition">Começar</button>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
