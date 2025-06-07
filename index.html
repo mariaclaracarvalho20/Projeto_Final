@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Diário Animado</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2F3C7E",
+              secondary: "#D8D4F2",
+              accent: "#A2D5AB",
+              neutral: "#F7F7F7",
+            },
+            fontFamily: {
+              sans: ["Poppins", "sans-serif"],
+            },
+            animation: {
+              fadeIn: "fadeIn 1.2s ease-out forwards",
+              bounceIn: "bounceIn 1s ease-out forwards",
+            },
+            keyframes: {
+              fadeIn: {
+                "0%": { opacity: 0 },
+                "100%": { opacity: 1 },
+              },
+              bounceIn: {
+                "0%": { transform: "scale(0.9)", opacity: 0 },
+                "60%": { transform: "scale(1.05)", opacity: 1 },
+                "100%": { transform: "scale(1)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .confetti {
+        position: fixed;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        opacity: 0.9;
+        border-radius: 50%;
+        animation-name: confettiFall;
+        animation-timing-function: linear;
+        animation-iteration-count: 1;
+      }
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+
+
+  <body
+    class="bg-gradient-to-br from-neutral to-secondary dark:from-gray-900 dark:to-gray-800 font-sans min-h-screen flex items-center justify-center px-4 transition-colors duration-500"
+    id="mainBody"
+  >
+    <button
+      id="themeToggle"
+      class="absolute top-4 right-4 bg-primary text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-900 transition"
+    >
+      🌙 Modo Escuro
+    </button>
+
+
+    <!-- Tela inicial -->
+    <div
+      id="intro"
+      class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center animate-fadeIn max-w-md transition-all duration-300 transform hover:scale-[1.01]"
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/742/742751.png"
+        alt="Ícone do diário"
+        class="mx-auto w-24 h-24 mb-6 animate-bounceIn drop-shadow-xl"
+      />
+      <h1 class="text-3xl text-primary dark:text-white font-bold mb-3">
+        Olá, bem-vindo(a) ao Diário Animado
+      </h1>
+      <p class="text-gray-700 dark:text-gray-300 mb-6 text-base">
+        Um lugar seguro e moderno para registrar seus pensamentos, memórias e sonhos ✨
+      </p>
+      <button
+        id="startBtn"
+        class="bg-accent hover:bg-green-400 text-primary font-medium py-2 px-6 rounded-full shadow-md transition transform hover:scale-105"
+      >
+        Começar agora
+      </button>
+    </div>
+
+
+    <!-- Formulário de login -->
+    <div
+      id="loginForm"
+      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
+    >
+      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4">
+        Login
+      </h2>
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Email"
+        class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+      />
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Senha"
+        class="w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+      />
+      <div class="flex justify-center gap-4">
+        <button
+          id="loginBtn"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+        >
+          Entrar
+        </button>
+        <button
+          id="createAccountBtn"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+        >
+          Criar conta
+        </button>
+      </div>
+      <button
+        id="backBtn"
+        class="mt-6 text-primary dark:text-white hover:underline text-sm"
+      >
+        ← Voltar à página inicial
+      </button>
+    </div>
+
+
+    <!-- Formulário de registro -->
+    <div
+      id="registerForm"
+      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
+    >
+      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4">
+        Criar Conta
+      </h2>
+      <input
+        id="registerName"
+        type="text"
+        placeholder="Nome"
+        class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+      />
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="Email"
+        class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+      />
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="Senha"
+        class="w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+      />
+      <button
+        id="registerBtn"
+        type="button"
+        class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+      >
+        Registrar
+      </button>
+      <button
+        id="backToLoginBtn"
+        class="mt-6 text-primary dark:text-white hover:underline text-sm"
+      >
+        ← Voltar ao login
+      </button>
+    </div>
+
+
+    <!-- Dashboard do usuário -->
+    <div
+      id="dashboard"
+      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
+    >
+      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4">
+        Bem-vindo(a), <span id="userName"></span>!
+      </h2>
+      <p class="text-gray-700 dark:text-gray-300 mb-6">
+        Aqui você pode registrar seus pensamentos, memórias e sonhos.
+      </p>
+
+
+      <div class="flex flex-col items-center gap-3">
+        <button
+          id="newEntryBtn"
+          class="bg-accent text-primary py-2 px-6 rounded-full shadow-md hover:bg-green-400 transition"
+        >
+          Iniciar Novo Registro
+        </button>
+        <button
+          id="logoutBtn"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+        >
+          Sair
+        </button>
+      </div>
+
+
+      <!-- Área de registros (inicialmente vazia) -->
+      <div id="entriesList" class="mt-6 text-left max-h-64 overflow-y-auto"></div>
+    </div>
+
+
+    <!-- Modal para novo registro -->
+    <div
+      id="entryModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden"
+    >
+      <div class="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-lg w-full">
+        <h3 class="text-lg font-semibold mb-4 text-primary dark:text-white">
+          Novo Registro
+        </h3>
+        <textarea
+          id="entryText"
+          class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+          rows="5"
+          placeholder="Escreva aqui seu pensamento, memória ou sonho..."
+        ></textarea>
+        <div class="mt-4 flex justify-end gap-3">
+          <button
+            id="cancelEntryBtn"
+            class="px-4 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition"
+          >
+            Cancelar
+          </button>
+          <button
+            id="saveEntryBtn"
+            class="px-4 py-2 rounded-full bg-primary text-white hover:bg-blue-800 transition"
+          >
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Confetes -->
+    <div id="confettiContainer" class="fixed inset-0 pointer-events-none"></div>
+
+
+    <script>
+      // Configuração do Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBPl-srmPiWmAzA6OuXyCsUdts8B6ipCBM",
+        authDomain: "diario-55359.firebaseapp.com",
+        projectId: "diario-55359",
+        storageBucket: "diario-55359.appspot.com",
+        messagingSenderId: "229362802589",
+        appId: "1:229362802589:web:c3586269c128e4f4919974",
+        measurementId: "G-71JDE9PP8K"
+      };
+
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+
+      // Elementos
+      const intro = document.getElementById("intro");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const dashboard = document.getElementById("dashboard");
+      const userNameSpan = document.getElementById("userName");
+      const entriesList = document.getElementById("entriesList");
+      const entryModal = document.getElementById("entryModal");
+      const entryText = document.getElementById("entryText");
+      const confettiContainer = document.getElementById("confettiContainer");
+
+
+      // Botões
+      const startBtn = document.getElementById("startBtn");
+      const themeToggle = document.getElementById("themeToggle");
+      const loginBtn = document.getElementById("loginBtn");
+      const createAccountBtn = document.getElementById("createAccountBtn");
+      const backBtn = document.getElementById("backBtn");
+      const registerBtn = document.getElementById("registerBtn");
+      const backToLoginBtn = document.getElementById("backToLoginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const newEntryBtn = document.getElementById("newEntryBtn");
+      const cancelEntryBtn = document.getElementById("cancelEntryBtn");
+      const saveEntryBtn = document.getElementById("saveEntryBtn");
+
+
+      // Inputs
+      const loginEmail = document.getElementById("loginEmail");
+      const loginPassword = document.getElementById("loginPassword");
+      const registerName = document.getElementById("registerName");
+      const registerEmail = document.getElementById("registerEmail");
+      const registerPassword = document.getElementById("registerPassword");
+
+
+      // Tema escuro/claro
+      themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        if (document.body.classList.contains("dark")) {
+          themeToggle.textContent = "☀️ Modo Claro";
+          localStorage.setItem("theme", "dark");
+        } else {
+          themeToggle.textContent = "🌙 Modo Escuro";
+          localStorage.setItem("theme", "light");
+        }
+      });
+
+
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+        themeToggle.textContent = "☀️ Modo Claro";
+      }
+
+
+      // Navegação
+      startBtn.onclick = () => {
+        intro.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+      };
+
+
+      backBtn.onclick = () => {
+        loginForm.classList.add("hidden");
+        intro.classList.remove("hidden");
+      };
+
+
+      createAccountBtn.onclick = () => {
+        loginForm.classList.add("hidden");
+        registerForm.classList.remove("hidden");
+      };
+
+
+      backToLoginBtn.onclick = () => {
+        registerForm.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+      };
+
+
+      // Registrar usuário
+      registerBtn.onclick = async () => {
+        const name = registerName.value.trim();
+        const email = registerEmail.value.trim();
+        const password = registerPassword.value.trim();
+
+
+        if (!name || !email || !password) {
+          alert("Por favor, preencha todos os campos.");
+          return;
+        }
+
+
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+          await userCredential.user.updateProfile({ displayName: name });
+         
+          await db.collection("users").doc(userCredential.user.uid).set({
+            name: name,
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+
+          alert("Conta criada com sucesso!");
+          registerForm.classList.add("hidden");
+          loginForm.classList.remove("hidden");
+
+
+          registerName.value = "";
+          registerEmail.value = "";
+          registerPassword.value = "";
+        } catch (error) {
+          alert("Erro: " + error.message);
+          console.error(error);
+        }
+      };
+
+
+      // Login
+      loginBtn.onclick = async () => {
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value.trim();
+
+
+        if (!email || !password) {
+          alert("Por favor, preencha todos os campos.");
+          return;
+        }
+
+
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+          loginEmail.value = "";
+          loginPassword.value = "";
+        } catch (error) {
+          alert("Erro: " + error.message);
+          console.error(error);
+        }
+      };
+
+
+      // Logout
+      logoutBtn.onclick = () => {
+        auth.signOut();
+      };
+
+
+      // Monitorar autenticação
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          intro.classList.add("hidden");
+          loginForm.classList.add("hidden");
+          registerForm.classList.add("hidden");
+          dashboard.classList.remove("hidden");
+          userNameSpan.textContent = user.displayName || user.email;
+          loadEntries(user.uid);
+        } else {
+          intro.classList.remove("hidden");
+          loginForm.classList.add("hidden");
+          registerForm.classList.add("hidden");
+          dashboard.classList.add("hidden");
+        }
+      });
+
+
+      // Modal de registro
+      newEntryBtn.onclick = () => {
+        entryText.value = "";
+        entryModal.classList.remove("hidden");
+      };
+
+
+      cancelEntryBtn.onclick = () => {
+        entryModal.classList.add("hidden");
+      };
+
+
+      // Salvar registro
+      saveEntryBtn.onclick = async () => {
+        const text = entryText.value.trim();
+        if (!text) {
+          alert("O registro não pode estar vazio.");
+          return;
+        }
+
+
+        const user = auth.currentUser;
+        if (!user) {
+          alert("Usuário não autenticado.");
+          return;
+        }
+
+
+        try {
+          await db.collection("entries").add({
+            uid: user.uid,
+            text,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+
+          entryModal.classList.add("hidden");
+          createConfetti();
+          loadEntries(user.uid);
+        } catch (error) {
+          alert("Erro ao salvar registro: " + error.message);
+          console.error(error);
+        }
+      };
+
+
+      // Carregar registros (versão atualizada)
+      async function loadEntries(uid) {
+        try {
+          const querySnapshot = await db
+            .collection("entries")
+            .where("uid", "==", uid)
+            .orderBy("createdAt", "desc")
+            .get();
+
+
+          entriesList.innerHTML = "";
+
+
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const entryDiv = document.createElement("div");
+            entryDiv.classList.add(
+              "bg-secondary",
+              "dark:bg-gray-700",
+              "rounded-md",
+              "p-3",
+              "mb-2",
+              "shadow-sm",
+              "text-gray-800",
+              "dark:text-gray-200"
+            );
+            const date = data.createdAt
+              ? data.createdAt.toDate().toLocaleString()
+              : "Data desconhecida";
+            entryDiv.innerHTML = `<p>${data.text}</p><small class="block mt-2 text-gray-600 dark:text-gray-400">${date}</small>`;
+            entriesList.appendChild(entryDiv);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar registros:", error);
+          // Não mostra mensagem de erro para o usuário
+        }
+      }
+
+
+      // Confetes
+      function createConfetti() {
+        const colors = ["#A2D5AB", "#2F3C7E", "#D8D4F2", "#F9D67A"];
+        for (let i = 0; i < 30; i++) {
+          const confetti = document.createElement("div");
+          confetti.classList.add("confetti");
+          confetti.style.left = Math.random() * window.innerWidth + "px";
+          confetti.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDuration = 2 + Math.random() * 3 + "s";
+          confetti.style.width = confetti.style.height =
+            5 + Math.random() * 8 + "px";
+          confettiContainer.appendChild(confetti);
+
+
+          confetti.addEventListener("animationend", () => {
+            confetti.remove();
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
