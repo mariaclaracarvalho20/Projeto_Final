@@ -72,7 +72,6 @@
     </style>
   </head>
 
-
   <body
     class="bg-gradient-to-br from-neutral to-secondary dark:from-gray-900 dark:to-gray-800 font-sans min-h-screen flex items-center justify-center px-4 transition-colors duration-500"
     id="mainBody"
@@ -83,7 +82,6 @@
     >
       🌙 Modo Escuro
     </button>
-
 
     <!-- Tela inicial -->
     <div
@@ -108,7 +106,6 @@
         Começar agora
       </button>
     </div>
-
 
     <!-- Formulário de login -->
     <div
@@ -152,7 +149,6 @@
       </button>
     </div>
 
-
     <!-- Formulário de registro -->
     <div
       id="registerForm"
@@ -194,19 +190,17 @@
       </button>
     </div>
 
-
     <!-- Dashboard do usuário -->
     <div
       id="dashboard"
-      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
+      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
     >
-      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4">
+      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4 text-center">
         Bem-vindo(a), <span id="userName"></span>!
       </h2>
-      <p class="text-gray-700 dark:text-gray-300 mb-6">
+      <p class="text-gray-700 dark:text-gray-300 mb-6 text-center">
         Aqui você pode registrar seus pensamentos, memórias e sonhos.
       </p>
-
 
       <div class="flex flex-col items-center gap-3">
         <button
@@ -223,11 +217,9 @@
         </button>
       </div>
 
-
-      <!-- Área de registros (inicialmente vazia) -->
-      <div id="entriesList" class="mt-6 text-left max-h-64 overflow-y-auto"></div>
+      <!-- Área de registros -->
+      <div id="entriesList" class="mt-6 max-h-96 overflow-y-auto"></div>
     </div>
-
 
     <!-- Modal para novo registro -->
     <div
@@ -236,7 +228,7 @@
     >
       <div class="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-lg w-full">
         <h3 class="text-lg font-semibold mb-4 text-primary dark:text-white">
-          Novo Registro
+          <span id="modalTitle">Novo Registro</span>
         </h3>
         <textarea
           id="entryText"
@@ -258,13 +250,12 @@
             Salvar
           </button>
         </div>
+        <input type="hidden" id="currentEntryId" value="">
       </div>
     </div>
 
-
     <!-- Confetes -->
     <div id="confettiContainer" class="fixed inset-0 pointer-events-none"></div>
-
 
     <script>
       // Configuração do Firebase
@@ -278,11 +269,9 @@
         measurementId: "G-71JDE9PP8K"
       };
 
-
       firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
       const db = firebase.firestore();
-
 
       // Elementos
       const intro = document.getElementById("intro");
@@ -293,8 +282,9 @@
       const entriesList = document.getElementById("entriesList");
       const entryModal = document.getElementById("entryModal");
       const entryText = document.getElementById("entryText");
+      const modalTitle = document.getElementById("modalTitle");
+      const currentEntryId = document.getElementById("currentEntryId");
       const confettiContainer = document.getElementById("confettiContainer");
-
 
       // Botões
       const startBtn = document.getElementById("startBtn");
@@ -309,14 +299,12 @@
       const cancelEntryBtn = document.getElementById("cancelEntryBtn");
       const saveEntryBtn = document.getElementById("saveEntryBtn");
 
-
       // Inputs
       const loginEmail = document.getElementById("loginEmail");
       const loginPassword = document.getElementById("loginPassword");
       const registerName = document.getElementById("registerName");
       const registerEmail = document.getElementById("registerEmail");
       const registerPassword = document.getElementById("registerPassword");
-
 
       // Tema escuro/claro
       themeToggle.addEventListener("click", () => {
@@ -330,12 +318,10 @@
         }
       });
 
-
       if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark");
         themeToggle.textContent = "☀️ Modo Claro";
       }
-
 
       // Navegação
       startBtn.onclick = () => {
@@ -343,24 +329,20 @@
         loginForm.classList.remove("hidden");
       };
 
-
       backBtn.onclick = () => {
         loginForm.classList.add("hidden");
         intro.classList.remove("hidden");
       };
-
 
       createAccountBtn.onclick = () => {
         loginForm.classList.add("hidden");
         registerForm.classList.remove("hidden");
       };
 
-
       backToLoginBtn.onclick = () => {
         registerForm.classList.add("hidden");
         loginForm.classList.remove("hidden");
       };
-
 
       // Registrar usuário
       registerBtn.onclick = async () => {
@@ -368,12 +350,10 @@
         const email = registerEmail.value.trim();
         const password = registerPassword.value.trim();
 
-
         if (!name || !email || !password) {
           alert("Por favor, preencha todos os campos.");
           return;
         }
-
 
         try {
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -385,11 +365,9 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-
           alert("Conta criada com sucesso!");
           registerForm.classList.add("hidden");
           loginForm.classList.remove("hidden");
-
 
           registerName.value = "";
           registerEmail.value = "";
@@ -400,18 +378,15 @@
         }
       };
 
-
       // Login
       loginBtn.onclick = async () => {
         const email = loginEmail.value.trim();
         const password = loginPassword.value.trim();
 
-
         if (!email || !password) {
           alert("Por favor, preencha todos os campos.");
           return;
         }
-
 
         try {
           await auth.signInWithEmailAndPassword(email, password);
@@ -423,12 +398,10 @@
         }
       };
 
-
       // Logout
       logoutBtn.onclick = () => {
         auth.signOut();
       };
-
 
       // Monitorar autenticação
       auth.onAuthStateChanged(async (user) => {
@@ -447,20 +420,64 @@
         }
       });
 
-
       // Modal de registro
       newEntryBtn.onclick = () => {
+        modalTitle.textContent = "Novo Registro";
         entryText.value = "";
+        currentEntryId.value = "";
         entryModal.classList.remove("hidden");
       };
-
 
       cancelEntryBtn.onclick = () => {
         entryModal.classList.add("hidden");
       };
 
+      // Função para adicionar entrada à UI
+      function addEntryToUI(entry) {
+        // Se for a primeira entrada, remove a mensagem de "Nenhum registro encontrado"
+        if (entriesList.innerHTML.includes('Nenhum registro encontrado')) {
+          entriesList.innerHTML = '';
+        }
+        
+        const entryDiv = document.createElement("div");
+        entryDiv.classList.add(
+          "bg-secondary",
+          "dark:bg-gray-700",
+          "rounded-md",
+          "p-3",
+          "mb-3",
+          "shadow-sm",
+          "text-gray-800",
+          "dark:text-gray-200",
+          "relative"
+        );
+        
+        const date = entry.createdAt
+          ? entry.createdAt.toLocaleString()
+          : "Data desconhecida";
+        
+        entryDiv.innerHTML = `
+          <p class="mb-2">${entry.text}</p>
+          <small class="block text-gray-600 dark:text-gray-400 mb-3">${date}</small>
+          <div class="flex justify-end gap-2">
+            <button class="edit-btn px-3 py-1 bg-yellow-500 text-white rounded-full text-sm hover:bg-yellow-600 transition" data-id="${entry.id}">
+              Editar
+            </button>
+            <button class="delete-btn px-3 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition" data-id="${entry.id}">
+              Excluir
+            </button>
+          </div>
+        `;
+        
+        // Adiciona no topo da lista
+        entriesList.insertBefore(entryDiv, entriesList.firstChild);
+        
+        // Adiciona eventos aos botões
+        entryDiv.querySelector('.edit-btn').addEventListener('click', (e) => editEntry(e.target.getAttribute('data-id')));
+        entryDiv.querySelector('.delete-btn').addEventListener('click', (e) => deleteEntry(e.target.getAttribute('data-id')));
+      }
 
-      // Salvar registro
+      // Salvar registro (criação ou edição)
       saveEntryBtn.onclick = async () => {
         const text = entryText.value.trim();
         if (!text) {
@@ -468,33 +485,62 @@
           return;
         }
 
-
         const user = auth.currentUser;
         if (!user) {
           alert("Usuário não autenticado.");
           return;
         }
 
-
         try {
-          await db.collection("entries").add({
-            uid: user.uid,
-            text,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          });
-
+          // Se tiver um ID, estamos editando
+          if (currentEntryId.value) {
+            await db.collection("entries").doc(currentEntryId.value).update({
+              text: text,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // Atualiza a entrada na UI
+            const entryElement = document.querySelector(`.edit-btn[data-id="${currentEntryId.value}"]`)?.closest('div.bg-secondary');
+            if (entryElement) {
+              entryElement.querySelector('p').textContent = text;
+              entryElement.querySelector('small').textContent = 'Editado agora';
+            }
+          } else {
+            // Caso contrário, estamos criando um novo
+            const newEntry = {
+              uid: user.uid,
+              text,
+              createdAt: new Date(), // Usamos a data local para exibição imediata
+            };
+            
+            // Adiciona localmente primeiro para resposta imediata
+            addEntryToUI(newEntry);
+            
+            // Depois envia para o Firestore
+            const docRef = await db.collection("entries").add({
+              uid: user.uid,
+              text,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+            
+            // Atualiza o ID local com o ID real do Firestore
+            const entryElement = entriesList.firstChild;
+            entryElement.querySelector('.edit-btn').setAttribute('data-id', docRef.id);
+            entryElement.querySelector('.delete-btn').setAttribute('data-id', docRef.id);
+          }
 
           entryModal.classList.add("hidden");
           createConfetti();
-          loadEntries(user.uid);
+          
         } catch (error) {
           alert("Erro ao salvar registro: " + error.message);
           console.error(error);
+          // Recarrega as entradas em caso de erro
+          loadEntries(user.uid);
         }
       };
 
-
-      // Carregar registros (versão atualizada)
+      // Carregar registros
       async function loadEntries(uid) {
         try {
           const querySnapshot = await db
@@ -503,35 +549,70 @@
             .orderBy("createdAt", "desc")
             .get();
 
-
           entriesList.innerHTML = "";
 
+          if (querySnapshot.empty) {
+            entriesList.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-4">Nenhum registro encontrado. Comece adicionando um novo!</p>';
+            return;
+          }
 
           querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const entryDiv = document.createElement("div");
-            entryDiv.classList.add(
-              "bg-secondary",
-              "dark:bg-gray-700",
-              "rounded-md",
-              "p-3",
-              "mb-2",
-              "shadow-sm",
-              "text-gray-800",
-              "dark:text-gray-200"
-            );
-            const date = data.createdAt
-              ? data.createdAt.toDate().toLocaleString()
-              : "Data desconhecida";
-            entryDiv.innerHTML = `<p>${data.text}</p><small class="block mt-2 text-gray-600 dark:text-gray-400">${date}</small>`;
-            entriesList.appendChild(entryDiv);
+            data.id = doc.id; // Adiciona o ID ao objeto
+            data.createdAt = data.createdAt.toDate(); // Converte para objeto Date
+            addEntryToUI(data);
           });
+
         } catch (error) {
           console.error("Erro ao carregar registros:", error);
-          // Não mostra mensagem de erro para o usuário
+          // Mostra a lista vazia sem mensagem de erro
+          entriesList.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-4">Nenhum registro encontrado. Comece adicionando um novo!</p>';
         }
       }
 
+      // Editar registro
+      async function editEntry(entryId) {
+        try {
+          const doc = await db.collection("entries").doc(entryId).get();
+          if (doc.exists) {
+            const data = doc.data();
+            modalTitle.textContent = "Editar Registro";
+            entryText.value = data.text;
+            currentEntryId.value = entryId;
+            entryModal.classList.remove("hidden");
+          } else {
+            alert("Registro não encontrado.");
+          }
+        } catch (error) {
+          alert("Erro ao carregar registro para edição: " + error.message);
+          console.error(error);
+        }
+      }
+
+      // Excluir registro
+      async function deleteEntry(entryId) {
+        if (confirm("Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.")) {
+          try {
+            // Remove visualmente primeiro
+            const entryElement = document.querySelector(`.delete-btn[data-id="${entryId}"]`)?.closest('div.bg-secondary');
+            if (entryElement) {
+              entryElement.remove();
+            }
+            
+            // Se não houver mais entradas, mostra a mensagem padrão
+            if (entriesList.children.length === 0) {
+              entriesList.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-4">Nenhum registro encontrado. Comece adicionando um novo!</p>';
+            }
+            
+            // Depois remove do Firestore
+            await db.collection("entries").doc(entryId).delete();
+          } catch (error) {
+            console.error("Erro ao excluir registro:", error);
+            // Recarrega as entradas silenciosamente em caso de erro
+            loadEntries(auth.currentUser.uid);
+          }
+        }
+      }
 
       // Confetes
       function createConfetti() {
@@ -546,7 +627,6 @@
           confetti.style.width = confetti.style.height =
             5 + Math.random() * 8 + "px";
           confettiContainer.appendChild(confetti);
-
 
           confetti.addEventListener("animationend", () => {
             confetti.remove();
