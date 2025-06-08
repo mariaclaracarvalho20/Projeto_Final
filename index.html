@@ -112,31 +112,49 @@
       id="loginForm"
       class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
     >
-      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4">
+      <h2 class="text-2xl text-primary dark:text-white font-bold mb-6">
         Login
       </h2>
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="Email"
-        class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
-      />
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Senha"
-        class="w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
-      />
+      
+      <div class="mb-4 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+          </svg>
+        </div>
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="Email"
+          class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
+        />
+      </div>
+      
+      <div class="mb-6 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Senha"
+          class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
+        />
+      </div>
+      
       <div class="flex justify-center gap-4">
         <button
           id="loginBtn"
-          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
         >
           Entrar
         </button>
         <button
           id="createAccountBtn"
-          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
         >
           Criar conta
         </button>
@@ -149,42 +167,72 @@
       </button>
     </div>
 
-    <!-- Formulário de registro -->
+    <!-- Formulário de registro - DESIGN ATUALIZADO -->
     <div
       id="registerForm"
-      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
+      class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
     >
-      <h2 class="text-2xl text-primary dark:text-white font-bold mb-4">
+      <h2 class="text-2xl text-primary dark:text-white font-bold mb-6 text-center">
         Criar Conta
       </h2>
-      <input
-        id="registerName"
-        type="text"
-        placeholder="Nome"
-        class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
-      />
-      <input
-        id="registerEmail"
-        type="email"
-        placeholder="Email"
-        class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
-      />
-      <input
-        id="registerPassword"
-        type="password"
-        placeholder="Senha"
-        class="w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
-      />
+      
+      <div class="mb-4 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <input
+          id="registerName"
+          type="text"
+          placeholder="Nome completo"
+          class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          required
+        >
+      </div>
+      
+      <div class="mb-4 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+          </svg>
+        </div>
+        <input
+          id="registerEmail"
+          type="email"
+          placeholder="Email"
+          class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          required
+        >
+      </div>
+      
+      <div class="mb-6 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <input
+          id="registerPassword"
+          type="password"
+          placeholder="Senha"
+          class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          required
+        >
+      </div>
+      
       <button
         id="registerBtn"
         type="button"
-        class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition"
+        class="w-full bg-primary text-white py-3 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
       >
         Registrar
       </button>
+      
       <button
         id="backToLoginBtn"
-        class="mt-6 text-primary dark:text-white hover:underline text-sm"
+        class="mt-6 text-primary dark:text-white hover:underline text-sm w-full text-center"
       >
         ← Voltar ao login
       </button>
