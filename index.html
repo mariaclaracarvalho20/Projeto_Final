@@ -143,6 +143,10 @@
           placeholder="Senha"
           class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
         />
+        <!-- Botão do olhinho adicionado aqui -->
+        <span class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onclick="togglePasswordVisibility('loginPassword', this)">
+          👁️
+        </span>
       </div>
       
       <div class="flex justify-center gap-4">
@@ -353,6 +357,19 @@
       const registerName = document.getElementById("registerName");
       const registerEmail = document.getElementById("registerEmail");
       const registerPassword = document.getElementById("registerPassword");
+
+      // Função para mostrar/ocultar senha
+      function togglePasswordVisibility(inputId, iconElement) {
+        const passwordInput = document.getElementById(inputId);
+        
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          iconElement.textContent = "🙈"; // Ícone quando a senha está visível
+        } else {
+          passwordInput.type = "password";
+          iconElement.textContent = "👁️"; // Ícone padrão
+        }
+      }
 
       // Tema escuro/claro
       themeToggle.addEventListener("click", () => {
