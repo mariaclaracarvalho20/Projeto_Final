@@ -132,6 +132,86 @@
           class="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-primary focus:border-transparent transition"
         />
       </div>
+      
+      <div class="flex justify-center">
+        <button
+          id="createAccountBtn"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
+        >
+          Criar conta
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulário de registro - DESIGN ATUALIZADO -->
+    <div
+      id="registerForm"
+      class="hidden bg-white rounded-2xl shadow-2xl p-8 max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
+    >
+      <h2 class="text-2xl text-primary font-bold mb-6 text-center">
+        Criar Conta
+      </h2>
+      
+      <div class="mb-4 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <input
+          id="registerName"
+          type="text"
+          placeholder="Nome completo"
+          class="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          required
+        >
+      </div>
+      
+      <div class="mb-4 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+          </svg>
+        </div>
+        <input
+          id="registerEmail"
+          type="email"
+          placeholder="Email"
+          class="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          required
+        >
+      </div>
+      
+      <div class="mb-6 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <input
+          id="registerPassword"
+          type="password"
+          placeholder="Senha"
+          class="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          required
+        >
+      </div>
+      
+      <button
+        id="registerBtn"
+        type="button"
+        class="w-full bg-primary text-white py-3 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
+      >
+        Registrar
+      </button>
+      
+      <button
+        id="backToLoginBtn"
+        class="mt-6 text-primary hover:underline text-sm w-full text-center"
+      >
+        ← Voltar ao login
+      </button>
     </div>
 
     <!-- Dashboard do usuário -->
@@ -205,6 +285,7 @@
       // Elementos
       const intro = document.getElementById("intro");
       const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
       const dashboard = document.getElementById("dashboard");
       const userNameSpan = document.getElementById("userName");
       const entriesList = document.getElementById("entriesList");
@@ -216,6 +297,9 @@
 
       // Botões
       const startBtn = document.getElementById("startBtn");
+      const createAccountBtn = document.getElementById("createAccountBtn");
+      const registerBtn = document.getElementById("registerBtn");
+      const backToLoginBtn = document.getElementById("backToLoginBtn");
       const logoutBtn = document.getElementById("logoutBtn");
       const newEntryBtn = document.getElementById("newEntryBtn");
       const cancelEntryBtn = document.getElementById("cancelEntryBtn");
@@ -224,6 +308,9 @@
       // Inputs
       const loginEmail = document.getElementById("loginEmail");
       const loginPassword = document.getElementById("loginPassword");
+      const registerName = document.getElementById("registerName");
+      const registerEmail = document.getElementById("registerEmail");
+      const registerPassword = document.getElementById("registerPassword");
 
       // Dados do usuário e entradas
       let currentUser = null;
@@ -235,12 +322,72 @@
         loginForm.classList.remove("hidden");
       };
 
+      createAccountBtn.onclick = () => {
+        loginForm.classList.add("hidden");
+        registerForm.classList.remove("hidden");
+      };
+
+      backToLoginBtn.onclick = () => {
+        registerForm.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+      };
+
+      // Registrar usuário
+      registerBtn.onclick = async () => {
+        const name = registerName.value.trim();
+        const email = registerEmail.value.trim();
+        const password = registerPassword.value.trim();
+
+        if (!name || !email || !password) {
+          alert("Por favor, preencha todos os campos.");
+          return;
+        }
+
+        try {
+          // Verifica se o usuário já existe
+          const users = JSON.parse(localStorage.getItem('diario_users') || '[]');
+          const userExists = users.some(user => user.email === email);
+          
+          if (userExists) {
+            alert("Este email já está cadastrado.");
+            return;
+          }
+
+          // Cria novo usuário
+          const newUser = {
+            id: Date.now().toString(),
+            name,
+            email,
+            password, // Nota: Em uma aplicação real, nunca armazene senhas em texto puro
+            createdAt: new Date().toISOString()
+          };
+
+          users.push(newUser);
+          localStorage.setItem('diario_users', JSON.stringify(users));
+
+          // Adiciona usuário ao arquivo global
+          addUserToGlobalFile(newUser);
+
+          alert("Conta criada com sucesso!");
+          registerForm.classList.add("hidden");
+          loginForm.classList.remove("hidden");
+
+          registerName.value = "";
+          registerEmail.value = "";
+          registerPassword.value = "";
+        } catch (error) {
+          alert("Erro: " + error.message);
+          console.error(error);
+        }
+      };
+
       // Logout
       logoutBtn.onclick = () => {
         currentUser = null;
         userEntries = [];
         intro.classList.remove("hidden");
         loginForm.classList.add("hidden");
+        registerForm.classList.add("hidden");
         dashboard.classList.add("hidden");
       };
 
@@ -349,6 +496,9 @@
             
             // Adiciona localmente para resposta imediata
             addEntryToUI(newEntry);
+            
+            // Adiciona ao arquivo global
+            addEntryToGlobalFile(newEntry);
           }
 
           entryModal.classList.add("hidden");
@@ -421,6 +571,9 @@
             const updatedEntries = allEntries.filter(e => e.id !== entryId);
             localStorage.setItem('diario_entries', JSON.stringify(updatedEntries));
             
+            // Marca como removido no arquivo global
+            markEntryAsDeletedInGlobalFile(entryId);
+            
             // Se não houver mais entradas, mostra a mensagem padrão
             if (entriesList.children.length === 0) {
               entriesList.innerHTML = '<p class="text-center text-gray-500 py-4">Nenhum registro encontrado. Comece adicionando um novo!</p>';
@@ -430,6 +583,79 @@
             loadEntries();
           }
         }
+      }
+
+      // Funções para manipulação do arquivo global
+      function addUserToGlobalFile(user) {
+        // Carrega o arquivo existente ou cria um novo
+        let fileContent = localStorage.getItem('diario_global_file') || 
+                         "Diário Animado - Banco de Dados\n\nUsuários e Registros:\n\n";
+        
+        // Adiciona o novo usuário ao arquivo
+        fileContent += `\n\n[USUÁRIO]\nNome: ${user.name}\nEmail: ${user.email}\nID: ${user.id}\nData de Criação: ${new Date(user.createdAt).toLocaleString()}\n`;
+        
+        // Atualiza o arquivo no localStorage
+        localStorage.setItem('diario_global_file', fileContent);
+        
+        // Faz o download do arquivo atualizado
+        downloadGlobalFile();
+      }
+
+      function addEntryToGlobalFile(entry) {
+        if (!currentUser) return;
+        
+        // Carrega o arquivo existente
+        let fileContent = localStorage.getItem('diario_global_file') || 
+                         "Diário Animado - Banco de Dados\n\nUsuários e Registros:\n\n";
+        
+        // Adiciona a nova entrada ao arquivo
+        const date = new Date(entry.createdAt).toLocaleString();
+        fileContent += `\n\n[REGISTRO]\nUsuário: ${currentUser.name} (${currentUser.email})\nID: ${entry.id}\nData: ${date}\nConteúdo:\n${entry.text}\n`;
+        
+        // Atualiza o arquivo no localStorage
+        localStorage.setItem('diario_global_file', fileContent);
+        
+        // Faz o download do arquivo atualizado
+        downloadGlobalFile();
+      }
+
+      function markEntryAsDeletedInGlobalFile(entryId) {
+        // Carrega o arquivo existente
+        let fileContent = localStorage.getItem('diario_global_file') || 
+                         "Diário Animado - Banco de Dados\n\nUsuários e Registros:\n\n";
+        
+        // Adiciona marcação de registro removido
+        fileContent += `\n\n[REGISTRO REMOVIDO]\nID: ${entryId}\nData de Remoção: ${new Date().toLocaleString()}\n`;
+        
+        // Atualiza o arquivo no localStorage
+        localStorage.setItem('diario_global_file', fileContent);
+        
+        // Faz o download do arquivo atualizado
+        downloadGlobalFile();
+      }
+
+      function downloadGlobalFile() {
+        const fileName = 'diario_animado_db.txt';
+        const fileContent = localStorage.getItem('diario_global_file') || 
+                          "Diário Animado - Banco de Dados\n\nNenhum dado encontrado.\n";
+        
+        // Cria um blob com o conteúdo
+        const blob = new Blob([fileContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        // Cria um link temporário para download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpa
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
       }
 
       // Confetes
