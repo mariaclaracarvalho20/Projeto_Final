@@ -133,7 +133,13 @@
         />
       </div>
       
-      <div class="flex justify-center">
+      <div class="flex justify-center gap-4">
+        <button
+          id="loginBtn"
+          class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
+        >
+          Entrar
+        </button>
         <button
           id="createAccountBtn"
           class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition transform hover:scale-105"
@@ -297,6 +303,7 @@
 
       // Botões
       const startBtn = document.getElementById("startBtn");
+      const loginBtn = document.getElementById("loginBtn");
       const createAccountBtn = document.getElementById("createAccountBtn");
       const registerBtn = document.getElementById("registerBtn");
       const backToLoginBtn = document.getElementById("backToLoginBtn");
@@ -375,6 +382,43 @@
           registerName.value = "";
           registerEmail.value = "";
           registerPassword.value = "";
+        } catch (error) {
+          alert("Erro: " + error.message);
+          console.error(error);
+        }
+      };
+
+      // Login
+      loginBtn.onclick = async () => {
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value.trim();
+
+        if (!email || !password) {
+          alert("Por favor, preencha todos os campos.");
+          return;
+        }
+
+        try {
+          const users = JSON.parse(localStorage.getItem('diario_users') || '[]');
+          const user = users.find(u => u.email === email && u.password === password);
+          
+          if (user) {
+            currentUser = user;
+            loginEmail.value = "";
+            loginPassword.value = "";
+            
+            // Carrega as entradas do usuário
+            loadEntries();
+            
+            // Mostra o dashboard
+            intro.classList.add("hidden");
+            loginForm.classList.add("hidden");
+            registerForm.classList.add("hidden");
+            dashboard.classList.remove("hidden");
+            userNameSpan.textContent = currentUser.name || currentUser.email;
+          } else {
+            alert("Email ou senha incorretos.");
+          }
         } catch (error) {
           alert("Erro: " + error.message);
           console.error(error);
