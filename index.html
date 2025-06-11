@@ -143,7 +143,6 @@
           placeholder="Senha"
           class="pl-10 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition"
         />
-        <!-- Botão do olhinho adicionado aqui -->
         <span class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onclick="togglePasswordVisibility('loginPassword', this)">
           👁️
         </span>
@@ -171,7 +170,7 @@
       </button>
     </div>
 
-    <!-- Formulário de registro - DESIGN ATUALIZADO -->
+    <!-- Formulário de registro -->
     <div
       id="registerForm"
       class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]"
@@ -321,9 +320,19 @@
         measurementId: "G-71JDE9PP8K"
       };
 
+      // Inicializa o Firebase
       firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
       const db = firebase.firestore();
+
+      // Configura persistência de autenticação
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          console.log("Persistência de autenticação configurada");
+        })
+        .catch((error) => {
+          console.error("Erro ao configurar persistência:", error);
+        });
 
       // Elementos
       const intro = document.getElementById("intro");
@@ -364,10 +373,10 @@
         
         if (passwordInput.type === "password") {
           passwordInput.type = "text";
-          iconElement.textContent = "🙈"; // Ícone quando a senha está visível
+          iconElement.textContent = "🙈";
         } else {
           passwordInput.type = "password";
-          iconElement.textContent = "👁️"; // Ícone padrão
+          iconElement.textContent = "👁️";
         }
       }
 
@@ -499,7 +508,6 @@
 
       // Função para adicionar entrada à UI
       function addEntryToUI(entry) {
-        // Se for a primeira entrada, remove a mensagem de "Nenhum registro encontrado"
         if (entriesList.innerHTML.includes('Nenhum registro encontrado')) {
           entriesList.innerHTML = '';
         }
@@ -534,15 +542,13 @@
           </div>
         `;
         
-        // Adiciona no topo da lista
         entriesList.insertBefore(entryDiv, entriesList.firstChild);
         
-        // Adiciona eventos aos botões
         entryDiv.querySelector('.edit-btn').addEventListener('click', (e) => editEntry(e.target.getAttribute('data-id')));
         entryDiv.querySelector('.delete-btn').addEventListener('click', (e) => deleteEntry(e.target.getAttribute('data-id')));
       }
 
-      // Salvar registro (criação ou edição)
+      // Salvar registro
       saveEntryBtn.onclick = async () => {
         const text = entryText.value.trim();
         if (!text) {
@@ -557,38 +563,32 @@
         }
 
         try {
-          // Se tiver um ID, estamos editando
           if (currentEntryId.value) {
             await db.collection("entries").doc(currentEntryId.value).update({
               text: text,
               updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             
-            // Atualiza a entrada na UI
             const entryElement = document.querySelector(`.edit-btn[data-id="${currentEntryId.value}"]`)?.closest('div.bg-secondary');
             if (entryElement) {
               entryElement.querySelector('p').textContent = text;
               entryElement.querySelector('small').textContent = 'Editado agora';
             }
           } else {
-            // Caso contrário, estamos criando um novo
             const newEntry = {
               uid: user.uid,
               text,
-              createdAt: new Date(), // Usamos a data local para exibição imediata
+              createdAt: new Date(),
             };
             
-            // Adiciona localmente primeiro para resposta imediata
             addEntryToUI(newEntry);
             
-            // Depois envia para o Firestore
             const docRef = await db.collection("entries").add({
               uid: user.uid,
               text,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             });
             
-            // Atualiza o ID local com o ID real do Firestore
             const entryElement = entriesList.firstChild;
             entryElement.querySelector('.edit-btn').setAttribute('data-id', docRef.id);
             entryElement.querySelector('.delete-btn').setAttribute('data-id', docRef.id);
@@ -600,7 +600,6 @@
         } catch (error) {
           alert("Erro ao salvar registro: " + error.message);
           console.error(error);
-          // Recarrega as entradas em caso de erro
           loadEntries(user.uid);
         }
       };
@@ -623,14 +622,13 @@
 
           querySnapshot.forEach((doc) => {
             const data = doc.data();
-            data.id = doc.id; // Adiciona o ID ao objeto
-            data.createdAt = data.createdAt.toDate(); // Converte para objeto Date
+            data.id = doc.id;
+            data.createdAt = data.createdAt.toDate();
             addEntryToUI(data);
           });
 
         } catch (error) {
           console.error("Erro ao carregar registros:", error);
-          // Mostra a lista vazia sem mensagem de erro
           entriesList.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-4">Nenhum registro encontrado. Comece adicionando um novo!</p>';
         }
       }
@@ -658,22 +656,18 @@
       async function deleteEntry(entryId) {
         if (confirm("Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.")) {
           try {
-            // Remove visualmente primeiro
             const entryElement = document.querySelector(`.delete-btn[data-id="${entryId}"]`)?.closest('div.bg-secondary');
             if (entryElement) {
               entryElement.remove();
             }
             
-            // Se não houver mais entradas, mostra a mensagem padrão
             if (entriesList.children.length === 0) {
               entriesList.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-4">Nenhum registro encontrado. Comece adicionando um novo!</p>';
             }
             
-            // Depois remove do Firestore
             await db.collection("entries").doc(entryId).delete();
           } catch (error) {
             console.error("Erro ao excluir registro:", error);
-            // Recarrega as entradas silenciosamente em caso de erro
             loadEntries(auth.currentUser.uid);
           }
         }
