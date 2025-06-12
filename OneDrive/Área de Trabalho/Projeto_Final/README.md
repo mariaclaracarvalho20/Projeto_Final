@@ -16,7 +16,7 @@ Siga estas instruções para configurar o projeto localmente.
 
 1. **Clone o repositório**  
    ```bash
-   git clone https://github.com/seu-usuario/diario-animado.git
+   git clone https://github.com/mariaclaracarvalho20/projeto-final.git
    cd diario-animado
    ```
 
@@ -33,7 +33,6 @@ Siga estas instruções para configurar o projeto localmente.
 4. **Configure o Firebase**  
    - Crie um projeto no [Firebase Console](https://console.firebase.google.com/).  
    - Ative **Authentication** (Email/Password) e **Firestore Database**.  
-   - Copie suas credenciais do Firebase e atualize o arquivo `src/firebase-config.js`.  
 
 5. **Inicie o servidor de desenvolvimento**  
    ```bash
@@ -65,8 +64,6 @@ Este projeto está sob a licença MIT.
 - `react-router-dom` – roteamento entre páginas (se usado)
 - `tailwindcss` – estilização
 
-### Onde colocar esse arquivo?  
-Adicione o `README.md` na **raiz do seu projeto**, assim ele aparecerá automaticamente no GitHub.  
 
 ### Como enviar para o GitHub?  
 Se você já tem um repositório criado:  
@@ -83,7 +80,7 @@ Se ainda não tem:
 git init
 git add .
 git commit -m "Primeiro commit: adiciona projeto Diário Animado"
-git remote add origin https://github.com/seu-usuario/diario-animado.git
+git remote add origin https://github.com/mariaclaracarvalho20/projeto-final.git
 git push -u origin main
 ```  
 
