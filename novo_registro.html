@@ -116,6 +116,8 @@
     
     <div class="flex flex-col items-center gap-3">
       <button id="newEntryBtn" class="bg-accent text-primary py-2 px-6 rounded-full shadow-md hover:bg-green-400 transition">Iniciar Novo Registro</button>
+      <input type="file" id="fileInput" accept=".txt" class="hidden" />
+      
     </div>
   </div>
 
@@ -159,6 +161,15 @@
 
     <div class="flex justify-center gap-4 mt-6">
       <button
+        id="saveEntryBtn"
+        class="bg-primary text-white py-2 px-6 rounded-full hover:bg-blue-800 transition flex items-center gap-2"
+      >
+        <span>💾</span> Salvar como TXT
+      </button>
+      <button onclick="document.getElementById('fileInput').click()" class="bg-blue-500 text-white py-2 px-6 rounded-full shadow-md hover:bg-blue-600 transition mt-2">
+        📂 Abrir Registro
+      </button>
+      <button
         id="celebrateBtn"
         class="bg-accent text-primary py-2 px-6 rounded-full hover:bg-green-400 transition flex items-center gap-2"
       >
@@ -170,6 +181,8 @@
       >
         <span>✖</span> Cancelar
       </button>
+      
+        
     </div>
   </div>
 
@@ -177,7 +190,9 @@
     // Elementos do DOM
     const dashboard = document.getElementById("dashboard");
     const entryForm = document.getElementById("entryForm");
+
     const newEntryBtn = document.getElementById("newEntryBtn");
+    const saveEntryBtn = document.getElementById("saveEntryBtn");
     const celebrateBtn = document.getElementById("celebrateBtn");
     const cancelEntryBtn = document.getElementById("cancelEntryBtn");
 
@@ -237,7 +252,20 @@
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       const today = new Date();
       document.getElementById('current-date').textContent = today.toLocaleDateString('pt-BR', options);
-      return today.toISOString().split('T')[0];
+      return today.toISOString().split('T')[0]; // Retorna a data no formato YYYY-MM-DD
+    }
+
+    // Função para salvar como arquivo TXT
+    function saveAsTxt(title, content) {
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     // Eventos dos botões
@@ -254,12 +282,77 @@
       dashboard.classList.remove("hidden");
     });
 
+    saveEntryBtn.addEventListener("click", () => {
+      const title = document.getElementById("entryTitle").value.trim();
+      const text = document.getElementById("entryText").value.trim();
+
+      if (!title || !text) {
+        alert("Por favor, preencha título e descrição.");
+        return;
+      }
+
+      // Formata o conteúdo do arquivo
+      const dateStr = showCurrentDate();
+      const content = `Título: ${title}\nData: ${dateStr}\n\n${text}`;
+      
+      // Salva como arquivo TXT
+      saveAsTxt(title, content);
+      
+      alert("Registro salvo como arquivo TXT!");
+      entryForm.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+    });
+
     // Conecta o evento ao botão Celebrar
     celebrateBtn.addEventListener("click", celebrate);
 
     // Mostra apenas o dashboard inicialmente
     dashboard.classList.remove("hidden");
     entryForm.classList.add("hidden");
-  </script>
+  
+    // NOVO: Manipulador para abrir arquivos TXT
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const content = e.target.result;
+    
+    // Abrir tela de edição e preencher campos
+    dashboard.classList.add("hidden");
+    entryForm.classList.remove("hidden");
+
+    // Extrai título, data e conteúdo do arquivo
+    const lines = content.split('\n');
+    let title = '';
+    let date = '';
+    let text = '';
+    
+    if (lines.length > 0 && lines[0].startsWith('Título:')) {
+      title = lines[0].replace('Título:', '').trim();
+    }
+    
+    if (lines.length > 1 && lines[1].startsWith('Data:')) {
+      date = lines[1].replace('Data:', '').trim();
+    }
+    
+    // O restante é o conteúdo
+    if (lines.length > 2) {
+      text = lines.slice(2).join('\n').trim();
+    }
+
+    document.getElementById('entryTitle').value = title;
+    document.getElementById('entryText').value = text;
+    document.getElementById('current-date').textContent = date || showCurrentDate();
+  };
+
+  reader.readAsText(file);
+});
+
+
+</script>
 </body>
 </html>
