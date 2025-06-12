@@ -84,6 +84,23 @@
       cursor: pointer;
       margin: 0 5px;
     }
+    
+    .confetti {
+      position: fixed;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      opacity: 1;
+      z-index: 9999;
+      animation: confettiFall linear forwards;
+    }
+    
+    @keyframes confettiFall {
+      to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 
@@ -142,6 +159,12 @@
 
     <div class="flex justify-center gap-4 mt-6">
       <button
+        id="celebrateBtn"
+        class="bg-accent text-primary py-2 px-6 rounded-full hover:bg-green-400 transition flex items-center gap-2"
+      >
+        <span>🎉</span> Celebrar!
+      </button>
+      <button
         id="cancelEntryBtn"
         class="bg-gray-500 text-white py-2 px-6 rounded-full hover:bg-gray-600 transition flex items-center gap-2"
       >
@@ -155,6 +178,7 @@
     const dashboard = document.getElementById("dashboard");
     const entryForm = document.getElementById("entryForm");
     const newEntryBtn = document.getElementById("newEntryBtn");
+    const celebrateBtn = document.getElementById("celebrateBtn");
     const cancelEntryBtn = document.getElementById("cancelEntryBtn");
 
     // Alternar tema
@@ -167,6 +191,30 @@
         themeToggle.textContent = "🌙 Modo Escuro";
       }
     });
+
+    // Efeito de confetes
+    function celebrate() {
+      for (let i = 0; i < 100; i++) {
+        createConfetti();
+      }
+      alert('Você é incrível! 🎉');
+    }
+
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+      confetti.style.width = Math.random() * 10 + 5 + 'px';
+      confetti.style.height = confetti.style.width;
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      document.body.appendChild(confetti);
+      
+      setTimeout(() => {
+        confetti.remove();
+      }, 5000);
+    }
 
     // Funções para o diário
     function setMood(mood) {
@@ -205,6 +253,9 @@
       entryForm.classList.add("hidden");
       dashboard.classList.remove("hidden");
     });
+
+    // Conecta o evento ao botão Celebrar
+    celebrateBtn.addEventListener("click", celebrate);
 
     // Mostra apenas o dashboard inicialmente
     dashboard.classList.remove("hidden");
