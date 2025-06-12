@@ -84,28 +84,13 @@
       cursor: pointer;
       margin: 0 5px;
     }
-    
-    .confetti {
-      position: fixed;
-      top: -10px;
-      width: 10px;
-      height: 10px;
-      opacity: 1;
-      z-index: 9999;
-      animation: confettiFall linear forwards;
-    }
-    
-    @keyframes confettiFall {
-      to {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-      }
-    }
   </style>
 </head>
 
 <body class="bg-gradient-to-br from-neutral to-secondary dark:from-gray-900 dark:to-gray-800 font-sans min-h-screen flex items-center justify-center px-4 transition-colors duration-500">
-
+  <button id="themeToggle" class="absolute top-4 right-4 bg-primary text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-900 transition">
+    🌙 Modo Escuro
+  </button>
 
   <!-- Dashboard Principal -->
   <div id="dashboard" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center max-w-md animate-fadeIn transition-all duration-300 transform hover:scale-[1.01]">
@@ -114,14 +99,116 @@
     
     <div class="flex flex-col items-center gap-3">
       <button id="newEntryBtn" class="bg-accent text-primary py-2 px-6 rounded-full shadow-md hover:bg-green-400 transition">Iniciar Novo Registro</button>
-      <input type="file" id="fileInput" accept=".txt" class="hidden" />
-      
     </div>
   </div>
 
-  
+  <!-- Formulário de Registro -->
+  <div id="entryForm" class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-3xl animate-fadeIn transition-all duration-300">
+    <h2 class="text-2xl text-primary dark:text-white font-bold mb-4 text-center">
+      🌟 Novo Registro Feliz 🌟
+    </h2>
+    
+    <div class="text-primary dark:text-white mb-4 text-center" id="current-date"></div>
+    
+    <div class="mood-selector text-center mb-4">
+      <p class="text-gray-700 dark:text-gray-300 mb-2">Como está seu humor hoje?</p>
+      <button class="mood-btn" onclick="setMood('😊')">😊</button>
+      <button class="mood-btn" onclick="setMood('😂')">😂</button>
+      <button class="mood-btn" onclick="setMood('🥰')">🥰</button>
+      <button class="mood-btn" onclick="setMood('😎')">😎</button>
+      <button class="mood-btn" onclick="setMood('🤩')">🤩</button>
+    </div>
 
+    <div class="emoji-picker flex justify-center gap-3 mb-4">
+      <span class="emoji-btn" onclick="insertEmoji('😊')">😊</span>
+      <span class="emoji-btn" onclick="insertEmoji('🌈')">🌈</span>
+      <span class="emoji-btn" onclick="insertEmoji('🎉')">🎉</span>
+      <span class="emoji-btn" onclick="insertEmoji('✨')">✨</span>
+      <span class="emoji-btn" onclick="insertEmoji('🌸')">🌸</span>
+    </div>
 
+    <input
+      id="entryTitle"
+      type="text"
+      placeholder="Título do seu dia"
+      class="w-full p-2 mb-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white"
+    />
+    
+    <textarea
+      id="entryText"
+      class="diary-textarea"
+      placeholder="Escreva aqui sobre seu dia feliz..."
+    ></textarea>
 
+    <div class="flex justify-center gap-4 mt-6">
+      <button
+        id="cancelEntryBtn"
+        class="bg-gray-500 text-white py-2 px-6 rounded-full hover:bg-gray-600 transition flex items-center gap-2"
+      >
+        <span>✖</span> Cancelar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Elementos do DOM
+    const dashboard = document.getElementById("dashboard");
+    const entryForm = document.getElementById("entryForm");
+    const newEntryBtn = document.getElementById("newEntryBtn");
+    const cancelEntryBtn = document.getElementById("cancelEntryBtn");
+
+    // Alternar tema
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      if (document.body.classList.contains("dark")) {
+        themeToggle.textContent = "☀️ Modo Claro";
+      } else {
+        themeToggle.textContent = "🌙 Modo Escuro";
+      }
+    });
+
+    // Funções para o diário
+    function setMood(mood) {
+      document.getElementById("entryText").value += mood;
+    }
+
+    function insertEmoji(emoji) {
+      const textarea = document.getElementById("entryText");
+      const startPos = textarea.selectionStart;
+      const endPos = textarea.selectionEnd;
+      const text = textarea.value;
+      
+      textarea.value = text.substring(0, startPos) + emoji + text.substring(endPos);
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = startPos + emoji.length;
+    }
+
+    // Mostrar data atual
+    function showCurrentDate() {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const today = new Date();
+      document.getElementById('current-date').textContent = today.toLocaleDateString('pt-BR', options);
+      return today.toISOString().split('T')[0];
+    }
+
+    // Eventos dos botões
+    newEntryBtn.addEventListener("click", () => {
+      document.getElementById("entryTitle").value = "";
+      document.getElementById("entryText").value = "";
+      showCurrentDate();
+      dashboard.classList.add("hidden");
+      entryForm.classList.remove("hidden");
+    });
+
+    cancelEntryBtn.addEventListener("click", () => {
+      entryForm.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+    });
+
+    // Mostra apenas o dashboard inicialmente
+    dashboard.classList.remove("hidden");
+    entryForm.classList.add("hidden");
+  </script>
 </body>
 </html>
