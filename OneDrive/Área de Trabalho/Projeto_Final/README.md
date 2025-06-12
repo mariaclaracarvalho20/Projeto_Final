@@ -59,6 +59,12 @@ Este projeto está sob a licença MIT.
 
 ---  
 
+## 📦 Principais bibliotecas usadas
+
+- `firebase` – integração com Auth e Firestore
+- `react-router-dom` – roteamento entre páginas (se usado)
+- `tailwindcss` – estilização
+
 ### Onde colocar esse arquivo?  
 Adicione o `README.md` na **raiz do seu projeto**, assim ele aparecerá automaticamente no GitHub.  
 
